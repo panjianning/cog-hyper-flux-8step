@@ -8,7 +8,7 @@ import torch
 import subprocess
 import numpy as np
 from typing import List
-from diffusers import FluxPipeline
+from diffusers import FluxPipeline, FluxImg2ImgPipeline
 from transformers import CLIPImageProcessor
 from diffusers.pipelines.stable_diffusion.safety_checker import (
     StableDiffusionSafetyChecker
@@ -61,7 +61,7 @@ class Predictor(BasePredictor):
         print("Loading Flux txt2img Pipeline")
         if not os.path.exists(MODEL_CACHE):
             download_weights(MODEL_URL, MODEL_CACHE)
-        self.txt2img_pipe = FluxPipeline.from_pretrained(
+        self.img2img_pipe = FluxImg2ImgPipeline.from_pretrained(
             MODEL_CACHE,
             torch_dtype=torch.bfloat16
         ).to("cuda")
@@ -150,10 +150,10 @@ class Predictor(BasePredictor):
 
         flux_kwargs = {}
         print(f"Prompt: {prompt}")
-        print("txt2img mode")
+        print("img2img mode")
         flux_kwargs["width"] = width
         flux_kwargs["height"] = height
-        pipe = self.txt2img_pipe
+        pipe = self.img2img_pipe
 
         generator = torch.Generator("cuda").manual_seed(seed)
 
